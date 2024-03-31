@@ -72,17 +72,19 @@
     function checkAndRedirect() {
         if (!isLoggedIn()) {
             window.location.href = "about:blank";
-            resetTimeout(); // Timeout zurücksetzen, wenn der Benutzer nicht eingeloggt ist
-        } else {
-            alert("Login Timeouted");
         }
     }
 
     // Funktion zum Zurücksetzen des Timeout
     function resetTimeout() {
-        clearTimeout(timeout);
-        timeout = setTimeout(checkAndRedirect, remainingTime * 1000);
-        startCountdown(); // Startet den Timeout-Countdown, wenn der Timeout zurückgesetzt wird
+        if (!isLoggedIn()) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                checkAndRedirect();
+                alert("Login Timeouted");
+            }, remainingTime * 1000);
+            startCountdown(); // Startet den Timeout-Countdown, wenn der Timeout zurückgesetzt wird
+        }
     }
 
     // Funktion zum Starten des Timeout-Countdowns
@@ -118,6 +120,14 @@
         logoutButton.style.zIndex = "10000";
         logoutButton.addEventListener("click", logout);
         document.body.appendChild(logoutButton);
+    }
+
+    // Funktion zum Ausblenden des Logout-Buttons
+    function hideLogoutButton() {
+        const logoutButton = document.getElementById("logoutButton");
+        if (logoutButton) {
+            logoutButton.remove();
+        }
     }
 
     // Hauptfunktion
