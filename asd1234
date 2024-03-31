@@ -45,6 +45,7 @@
                 }
                 hideSplashScreen();
                 resetTimeout();
+                showLogoutButton(); // Hinzufügen des Logout-Buttons nach erfolgreichem Login
             } else {
                 document.getElementById("loginError").innerText = "Wrong Password";
                 if (!validIP) {
@@ -81,6 +82,50 @@
             checkAndRedirect();
             alert("Login Timeouted");
         }, remainingTime * 1000);
+        startCountdown(); // Startet den Timeout-Countdown, wenn der Timeout zurückgesetzt wird
+    }
+
+    // Funktion zum Starten des Timeout-Countdowns
+    function startCountdown() {
+        let countdown = remainingTime;
+        const countdownInterval = setInterval(function() {
+            countdown--;
+            if (countdown >= 0) {
+                document.getElementById("countdown").textContent = `Countdown: ${countdown} seconds`;
+            } else {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+    }
+
+    // Funktion zum Anzeigen des Logout-Buttons
+    function showLogoutButton() {
+        const logoutButton = document.createElement('button');
+        logoutButton.id = "logoutButton";
+        logoutButton.textContent = "Logout";
+        logoutButton.style.position = "fixed";
+        logoutButton.style.bottom = "10px";
+        logoutButton.style.left = "10px";
+        logoutButton.style.zIndex = "10000";
+        logoutButton.addEventListener("click", logout);
+        document.body.appendChild(logoutButton);
+    }
+
+    // Funktion zum Ausblenden des Logout-Buttons
+    function hideLogoutButton() {
+        const logoutButton = document.getElementById("logoutButton");
+        if (logoutButton) {
+            logoutButton.parentNode.removeChild(logoutButton);
+        }
+    }
+
+    // Funktion zum Ausloggen
+    function logout() {
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("rememberLogin");
+        hideLogoutButton();
+        clearTimeout(timeout);
+        main();
     }
 
     // Hauptfunktion
@@ -162,6 +207,7 @@
         } else {
             loadContent();
             resetTimeout();
+            showLogoutButton(); // Hinzufügen des Logout-Buttons, wenn der Benutzer bereits eingeloggt ist
         }
     }
 
